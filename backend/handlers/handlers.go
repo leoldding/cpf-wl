@@ -24,7 +24,7 @@ func createUser(database *db.Database) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		database.AddUser(newUser)
+		database.CreateUser(newUser)
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(newUser)
 	}
