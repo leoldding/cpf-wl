@@ -55,13 +55,13 @@ export async function UpdateUser(user: User): Promise<boolean> {
     }
 }
 
-export async function DeleteUser(user: User): Promise<boolean> {
+export async function DeleteUser(userId: string): Promise<boolean> {
     try {
-        const response = await fetch("http://localhost:8080/api/users/" + user.Id, {
+        const response = await fetch("http://localhost:8080/api/users/" + userId, {
             method: "DELETE",
         });
         if (!response.ok) {
-            throw new Error(`Error deleting user $user.name`);
+            throw new Error(`Error deleting user $userId`);
         }
         return true;
     } catch (error) {

@@ -15,6 +15,7 @@ type User struct {
 	Name      string
 	Snatch    int
 	CleanJerk int
+	Total     int
 }
 
 func NewDatabase() *Database {
@@ -23,10 +24,10 @@ func NewDatabase() *Database {
 
 func (database *Database) LoadMockData() {
 	log.Println("LOADING MOCK DATA")
-	database.CreateUser(&User{Name: "Alfred A.", Snatch: 20, CleanJerk: 40})
-	database.CreateUser(&User{Name: "Benjamin B.", Snatch: 40, CleanJerk: 90})
-	database.CreateUser(&User{Name: "Charles C.", Snatch: 10, CleanJerk: 20})
-	database.CreateUser(&User{Name: "Damian D.", Snatch: 150, CleanJerk: 290})
+	database.CreateUser(&User{Name: "Alfred Alvarado", Snatch: 20, CleanJerk: 40})
+	database.CreateUser(&User{Name: "Benjamin Bolognese", Snatch: 40, CleanJerk: 90})
+	database.CreateUser(&User{Name: "Charles Charleston", Snatch: 10, CleanJerk: 20})
+	database.CreateUser(&User{Name: "Damian Dog", Snatch: 150, CleanJerk: 290})
 }
 
 func (database *Database) CreateUser(user *User) {
@@ -34,6 +35,7 @@ func (database *Database) CreateUser(user *User) {
 	b := make([]byte, 4)
 	rand.Read(b)
 	user.Id = hex.EncodeToString(b)
+	user.Total = user.Snatch + user.CleanJerk
 	database.Users = append(database.Users, user)
 }
 

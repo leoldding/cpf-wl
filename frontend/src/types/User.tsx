@@ -3,4 +3,5 @@ export type User = {
     Name: string;
     Snatch: number;
     CleanJerk: number;
+    Total: number;
 }
