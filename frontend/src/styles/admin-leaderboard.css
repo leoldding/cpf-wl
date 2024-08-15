@@ -1,0 +1,21 @@
+.admin-leaderboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 0.5fr;
+    gap: 10px;
+    text-align: center;
+}
+
+.admin-leaderboard-header {
+    font-weight: bold;
+    display: contents;
+}
+
+.admin-leaderboard-row {
+    display: contents;
+    padding: 10px 0;
+}
+
+.admin-leaderboard-row > div, .admin-leaderboard-row > input {
+    padding: 5px;
+}
+

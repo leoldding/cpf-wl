@@ -1,0 +1,20 @@
+.leaderboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    text-align: center;
+}
+
+.leaderboard-header {
+    font-weight: bold;
+    display: contents;
+}
+
+.leaderboard-row {
+    display: contents;
+    padding: 10px 0;
+}
+
+.leaderboard-row > div {
+    padding: 5px;
+}
