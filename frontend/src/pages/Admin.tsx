@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { User } from "../types/User"
-import { GetUsers, UpdateUser, DeleteUser } from "../api/Users"
+import { CreateUser, GetUsers, UpdateUser, DeleteUser } from "../api/Users"
 import "../styles/admin-leaderboard.css"
-import { IoMdCheckmark } from "react-icons/io";
+import { IoMdCheckmark, IoMdAdd } from "react-icons/io";
 import { FaRegTrashAlt } from "react-icons/fa";
 
 const Admin: React.FC = () => {
 
     const [users, setUsers] = useState<User[]>([]);
     const [inputValues, setInputValues] = useState<{ [key: string]: { Name: string, Snatch: string, CleanJerk: string } }>({});
+    const [addUser, setAddUser] = useState<{ Name: string, Snatch: string, CleanJerk: string }>({ Name: "", Snatch: "", CleanJerk: "" });
 
     const sortUsers = (users: User[]) => {
         return users.sort((a, b) => a.Name.localeCompare(b.Name))
@@ -31,13 +32,6 @@ const Admin: React.FC = () => {
         };
         getUsers();
     }, []);
-
-    const handleDeleteButton = (userId: string) => {
-        DeleteUser(userId);
-
-        const newUsers = users.filter(user => user.Id != userId);
-        setUsers(newUsers);
-    }
 
     const handleUpdateButton = (userId: string) => {
         const name = inputValues[userId].Name;
@@ -85,13 +79,46 @@ const Admin: React.FC = () => {
         }));
     }
 
-    const enableButton = (userId: string) => {
+    const enableUpdateButton = (userId: string) => {
         const { Name, Snatch, CleanJerk } = inputValues[userId] || {};
         const isNameValid = Name === "" || /^[a-zA-Z\s]+$/.test(Name) && !/^\s+$/.test(Name);
         const isSnatchValid = Snatch === "" || /^\d+$/.test(Snatch);
         const isCleanJerkValid = CleanJerk === "" || /^\d+$/.test(CleanJerk);
 
         return (!!Name || !!Snatch || !!CleanJerk) && isNameValid && isSnatchValid && isCleanJerkValid;
+    }
+
+    const handleDeleteButton = (userId: string) => {
+        DeleteUser(userId);
+
+        const newUsers = users.filter(user => user.Id != userId);
+        setUsers(newUsers);
+    }
+
+    const handleAddButton = async () => {
+        const user: User = { Id: "", Total: 0, Name: addUser.Name, Snatch: parseInt(addUser.Snatch), CleanJerk: parseInt(addUser.CleanJerk) }
+        const newUser = await CreateUser(user);
+
+        setAddUser({ Name: "", Snatch: "", CleanJerk: "" });
+        const newUsers = [...users];
+        newUsers.push(newUser);
+        setUsers(newUsers);
+    }
+
+    const handleAddChange = (field: string, value: string) => {
+        setAddUser((prevState) => ({
+            ...prevState,
+            [field]: value
+        }));
+    }
+
+    const enableAddButton = () => {
+        const { Name, Snatch, CleanJerk } = addUser || {};
+        const isNameValid = /^[a-zA-Z\s]+$/.test(Name) && !/^\s+$/.test(Name);
+        const isSnatchValid = /^\d+$/.test(Snatch);
+        const isCleanJerkValid = /^\d+$/.test(CleanJerk);
+
+        return isNameValid && isSnatchValid && isCleanJerkValid;
     }
 
     return (
@@ -126,10 +153,34 @@ const Admin: React.FC = () => {
                         />
                         <div>{user.Total}</div>
                         <div>
-                            <button type="button" disabled={!enableButton(user.Id)} onClick={() => handleUpdateButton(user.Id)}><IoMdCheckmark /></button>
+                            <button type="button" disabled={!enableUpdateButton(user.Id)} onClick={() => handleUpdateButton(user.Id)}><IoMdCheckmark /></button>
                             <button type="button" onClick={() => handleDeleteButton(user.Id)}><FaRegTrashAlt /></button>
                         </div>
                     </div>))}
+                    <div className="admin-leaderboard-row">
+                        <input
+                            type="text"
+                            placeholder="New Athlete"
+                            value={addUser.Name}
+                            onChange={(e) => handleAddChange("Name", e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Snatch Weight"
+                            value={addUser.Snatch}
+                            onChange={(e) => handleAddChange("Snatch", e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Clean & Jerk Weight"
+                            value={addUser.CleanJerk}
+                            onChange={(e) => handleAddChange("CleanJerk", e.target.value)}
+                        />
+                        <div />
+                        <div>
+                            <button type="button" disabled={!enableAddButton()} onClick={handleAddButton}><IoMdAdd /></button>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
