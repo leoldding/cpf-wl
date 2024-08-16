@@ -1,6 +1,6 @@
 import { User } from "../types/User"
 
-export async function CreateUser(user: User): Promise<User | null> {
+export async function CreateUser(user: User): Promise<User> {
     try {
         const response = await fetch("http://localhost:8080/api/users", {
             method: "POST",
@@ -16,11 +16,11 @@ export async function CreateUser(user: User): Promise<User | null> {
         const returnedUser: User = await response.json();
         return returnedUser;
     } catch (error) {
-        return null;
+        return {} as User;
     }
 }
 
-export async function GetUsers(): Promise<User[] | null> {
+export async function GetUsers(): Promise<User[]> {
     try {
         const response = await fetch("http://localhost:8080/api/users", {
             method: "GET",
@@ -31,7 +31,7 @@ export async function GetUsers(): Promise<User[] | null> {
         const returnedUsers: User[] = await response.json();
         return returnedUsers;
     } catch (error) {
-        return null;
+        return {} as User[];
     }
 }
 

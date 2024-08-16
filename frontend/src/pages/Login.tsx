@@ -23,7 +23,7 @@ const Login: React.FC = () => {
     }, []);
 
     const handleLoginButton = async () => {
-        const credential: Credential = { Username: credentials.Username, Password: credentials.Password }
+        const credential: Credential = { Username: credentials.Username, Password: credentials.Password };
         const loggedIn = await LoginAPI(credential);
         if (!loggedIn) {
             return;

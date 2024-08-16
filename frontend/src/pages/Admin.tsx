@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../types/User";
 import { CreateUser, GetUsers, UpdateUser, DeleteUser } from "../api/Users";
-import { Verify } from "../api/Auth";
+import { Verify, Logout } from "../api/Auth";
 import "../styles/admin-leaderboard.css";
 import { IoMdCheckmark, IoMdAdd } from "react-icons/io";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -146,6 +146,12 @@ const Admin: React.FC = () => {
         return isNameValid && isSnatchValid && isCleanJerkValid;
     }
 
+    const handleLogout = async () => {
+        const loggedOut = await Logout();
+        if (loggedOut) {
+            navigate("/login");
+        }
+    }
 
     return (
         <div className="admin-container">
@@ -209,6 +215,7 @@ const Admin: React.FC = () => {
                     </div>
                 </div>
             </main>
+            <button type="button" onClick={handleLogout}>logout</button>
         </div>
     );
 };

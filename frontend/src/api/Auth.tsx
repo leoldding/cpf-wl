@@ -1,5 +1,20 @@
 import { Credential } from "../types/Credentials"
 
+export async function Verify(): Promise<boolean> {
+    try {
+        const response = await fetch("http://localhost:8080/api/verify", {
+            method: "GET",
+            credentials: "include",
+        });
+        if (!response.ok) {
+            throw new Error("Unable to verify token");
+        }
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 export async function Login(credential: Credential): Promise<boolean> {
     try {
         const response = await fetch("http://localhost:8080/api/login", {
@@ -19,14 +34,15 @@ export async function Login(credential: Credential): Promise<boolean> {
     }
 }
 
-export async function Verify(): Promise<boolean> {
+export async function Logout(): Promise<boolean> {
     try {
-        const response = await fetch("http://localhost:8080/api/verify", {
+        const response = await fetch("http://localhost:8080/api/logout", {
             method: "GET",
             credentials: "include",
+
         });
         if (!response.ok) {
-            throw new Error("Unable to verify token");
+            throw new Error("Unable to logout");
         }
         return true;
     } catch (error) {

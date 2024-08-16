@@ -12,13 +12,32 @@ import (
 
 func RegisterHandlers(router *mux.Router, database *db.Database) {
 	log.Println("Registering Handlers")
+
+	router.HandleFunc("/api/verify", verifyToken).Methods("GET")
+
+	router.HandleFunc("/api/login", login()).Methods("POST")
+	router.HandleFunc("/api/logout", logout).Methods("GET")
+
 	router.HandleFunc("/api/users", checkJWT(createUser(database))).Methods("POST")
 	router.HandleFunc("/api/users", getUsers(database)).Methods("GET")
 	router.HandleFunc("/api/users", checkJWT(updateUser(database))).Methods("PATCH")
 	router.HandleFunc("/api/users/{id}", checkJWT(deleteUser(database))).Methods("DELETE")
 
-	router.HandleFunc("/api/login", login()).Methods("POST")
-	router.HandleFunc("/api/verify", verifyToken).Methods("GET")
+}
+
+func checkJWT(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := auth.VerifyToken(w, r); err != nil {
+			log.Println(err.Error())
+			return
+		}
+
+		handler(w, r)
+	}
+}
+
+func verifyToken(w http.ResponseWriter, r *http.Request) {
+	auth.VerifyToken(w, r)
 }
 
 func login() http.HandlerFunc {
@@ -33,19 +52,8 @@ func login() http.HandlerFunc {
 	}
 }
 
-func verifyToken(w http.ResponseWriter, r *http.Request) {
-	auth.VerifyToken(w, r)
-}
-
-func checkJWT(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := auth.VerifyToken(w, r); err != nil {
-			log.Println(err.Error())
-			return
-		}
-
-		handler(w, r)
-	}
+func logout(w http.ResponseWriter, r *http.Request) {
+	auth.Logout(w, r)
 }
 
 func createUser(database *db.Database) http.HandlerFunc {
