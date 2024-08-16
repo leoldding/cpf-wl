@@ -8,13 +8,13 @@ const Main: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
 
     const sortUsers = (users: User[]) => {
-        return users.sort((a, b) => b.Total - a.Total)
+        return users.sort((a, b) => b.Total - a.Total);
     };
 
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const users = await GetUsers()
+                const users = await GetUsers();
                 setUsers(sortUsers(users));
             } catch (error) {
                 console.error(error);
