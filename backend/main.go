@@ -24,7 +24,8 @@ func main() {
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"POST", "GET", "PATCH", "DELETE"})
+	credentialsOk := gorillaHandlers.AllowCredentials()
 
 	log.Println("Server is running on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", gorillaHandlers.CORS(originsOk, headersOk, methodsOk)(router)))
+	log.Fatal(http.ListenAndServe(":8080", gorillaHandlers.CORS(originsOk, headersOk, methodsOk, credentialsOk)(router)))
 }
