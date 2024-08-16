@@ -48,7 +48,7 @@ func (database *Database) UpdateUser(user *User) {
 	for i, dbUser := range database.Users {
 		if user.Id == dbUser.Id {
 			database.Users[i] = user
-			log.Println("UPDATING USER: " + user.Name)
+			log.Println("UPDATING USER: " + user.Id)
 			return
 		}
 	}
@@ -59,7 +59,7 @@ func (database *Database) DeleteUser(id string) {
 		if user.Id == id {
 			database.Users[i] = database.Users[len(database.Users)-1]
 			database.Users = database.Users[:len(database.Users)-1]
-			log.Println("DELETING USER: " + user.Name)
+			log.Println("DELETING USER: " + user.Id)
 			return
 		}
 	}

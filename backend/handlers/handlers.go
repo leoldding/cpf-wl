@@ -6,15 +6,46 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/leoldding/cpf-wl/auth"
 	db "github.com/leoldding/cpf-wl/database"
 )
 
 func RegisterHandlers(router *mux.Router, database *db.Database) {
 	log.Println("Registering Handlers")
-	router.HandleFunc("/api/users", createUser(database)).Methods("POST")
+	router.HandleFunc("/api/users", checkJWT(createUser(database))).Methods("POST")
 	router.HandleFunc("/api/users", getUsers(database)).Methods("GET")
-	router.HandleFunc("/api/users", updateUser(database)).Methods("PATCH")
-	router.HandleFunc("/api/users/{id}", deleteUser(database)).Methods("DELETE")
+	router.HandleFunc("/api/users", checkJWT(updateUser(database))).Methods("PATCH")
+	router.HandleFunc("/api/users/{id}", checkJWT(deleteUser(database))).Methods("DELETE")
+
+	router.HandleFunc("/api/login", login()).Methods("POST")
+	router.HandleFunc("/api/verify", verifyToken).Methods("GET")
+}
+
+func login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var creds auth.Credentials
+		if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		auth.Login(w, r, creds)
+	}
+}
+
+func verifyToken(w http.ResponseWriter, r *http.Request) {
+	auth.VerifyToken(w, r)
+}
+
+func checkJWT(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := auth.VerifyToken(w, r); err != nil {
+			log.Println(err.Error())
+			return
+		}
+
+		handler(w, r)
+	}
 }
 
 func createUser(database *db.Database) http.HandlerFunc {

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { User } from "../types/User"
-import { CreateUser, GetUsers, UpdateUser, DeleteUser } from "../api/Users"
-import "../styles/admin-leaderboard.css"
+import { useNavigate } from "react-router-dom";
+import { User } from "../types/User";
+import { CreateUser, GetUsers, UpdateUser, DeleteUser } from "../api/Users";
+import { Verify } from "../api/Auth";
+import "../styles/admin-leaderboard.css";
 import { IoMdCheckmark, IoMdAdd } from "react-icons/io";
 import { FaRegTrashAlt } from "react-icons/fa";
 
@@ -10,6 +12,7 @@ const Admin: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [inputValues, setInputValues] = useState<{ [key: string]: { Name: string, Snatch: string, CleanJerk: string } }>({});
     const [addUser, setAddUser] = useState<{ Name: string, Snatch: string, CleanJerk: string }>({ Name: "", Snatch: "", CleanJerk: "" });
+    const navigate = useNavigate();
 
     const sortUsers = (users: User[]) => {
         return users.sort((a, b) => a.Name.localeCompare(b.Name))
@@ -33,7 +36,21 @@ const Admin: React.FC = () => {
         getUsers();
     }, []);
 
-    const handleUpdateButton = (userId: string) => {
+    useEffect(() => {
+        const verify = async () => {
+            try {
+                const verified = await Verify();
+                if (!verified) {
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        verify();
+    }, []);
+
+    const handleUpdateButton = async (userId: string) => {
         const name = inputValues[userId].Name;
         const snatch = inputValues[userId].Snatch;
         const cleanjerk = inputValues[userId].CleanJerk;
@@ -63,7 +80,10 @@ const Admin: React.FC = () => {
         if (snatch !== "" || cleanjerk !== "") {
             user.Total = user.Snatch + user.CleanJerk;
         }
-        UpdateUser(user);
+        const updated = await UpdateUser(user);
+        if (!updated) {
+            return;
+        }
 
         newUsers[index] = user;
         setUsers(sortUsers(newUsers));
@@ -88,9 +108,11 @@ const Admin: React.FC = () => {
         return (!!Name || !!Snatch || !!CleanJerk) && isNameValid && isSnatchValid && isCleanJerkValid;
     }
 
-    const handleDeleteButton = (userId: string) => {
-        DeleteUser(userId);
-
+    const handleDeleteButton = async (userId: string) => {
+        const deleted = await DeleteUser(userId);
+        if (!deleted) {
+            return;
+        }
         const newUsers = users.filter(user => user.Id != userId);
         setUsers(newUsers);
     }
@@ -98,6 +120,9 @@ const Admin: React.FC = () => {
     const handleAddButton = async () => {
         const user: User = { Id: "", Total: 0, Name: addUser.Name, Snatch: parseInt(addUser.Snatch), CleanJerk: parseInt(addUser.CleanJerk) }
         const newUser = await CreateUser(user);
+        if (!newUser) {
+            return;
+        }
 
         setAddUser({ Name: "", Snatch: "", CleanJerk: "" });
         const newUsers = [...users];
@@ -120,6 +145,7 @@ const Admin: React.FC = () => {
 
         return isNameValid && isSnatchValid && isCleanJerkValid;
     }
+
 
     return (
         <div className="admin-container">
