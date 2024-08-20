@@ -124,6 +124,11 @@ const Admin: React.FC = () => {
             return;
         }
 
+        setInputValues((prevState) => ({
+            ...prevState,
+            [newUser.Id]: { Name: "", Snatch: "", CleanJerk: "" }
+        }));
+
         setAddUser({ Name: "", Snatch: "", CleanJerk: "" });
         const newUsers = [...users];
         newUsers.push(newUser);
