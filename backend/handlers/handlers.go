@@ -1,16 +1,19 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leoldding/cpf-wl/auth"
+	"github.com/leoldding/cpf-wl/database"
 	db "github.com/leoldding/cpf-wl/database"
 )
 
-func RegisterHandlers(router *mux.Router, database *db.Database) {
+func RegisterHandlers(router *mux.Router, ctx context.Context, pool *pgxpool.Pool) {
 	log.Println("Registering Handlers")
 
 	router.HandleFunc("/api/verify", verifyToken).Methods("GET")
@@ -18,11 +21,10 @@ func RegisterHandlers(router *mux.Router, database *db.Database) {
 	router.HandleFunc("/api/login", login()).Methods("POST")
 	router.HandleFunc("/api/logout", logout).Methods("GET")
 
-	router.HandleFunc("/api/users", checkJWT(createUser(database))).Methods("POST")
-	router.HandleFunc("/api/users", getUsers(database)).Methods("GET")
-	router.HandleFunc("/api/users", checkJWT(updateUser(database))).Methods("PATCH")
-	router.HandleFunc("/api/users/{id}", checkJWT(deleteUser(database))).Methods("DELETE")
-
+	router.HandleFunc("/api/users", checkJWT(createUser(ctx, pool))).Methods("POST")
+	router.HandleFunc("/api/users", getUsers(ctx, pool)).Methods("GET")
+	router.HandleFunc("/api/users", checkJWT(updateUser(ctx, pool))).Methods("PATCH")
+	router.HandleFunc("/api/users/{id}", checkJWT(deleteUser(ctx, pool))).Methods("DELETE")
 }
 
 func checkJWT(handler http.HandlerFunc) http.HandlerFunc {
@@ -56,42 +58,58 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	auth.Logout(w, r)
 }
 
-func createUser(database *db.Database) http.HandlerFunc {
+func createUser(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newUser *db.User
 		if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		database.CreateUser(newUser)
+		err := database.CreateUser(ctx, pool, newUser)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(newUser)
 	}
 }
 
-func getUsers(database *db.Database) http.HandlerFunc {
+func getUsers(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users := database.GetUsers()
+		users, err := database.GetUsers(ctx, pool)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		json.NewEncoder(w).Encode(users)
 	}
 }
 
-func updateUser(database *db.Database) http.HandlerFunc {
+func updateUser(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user *db.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		database.UpdateUser(user)
+		err := database.UpdateUser(ctx, pool, user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Write([]byte("Success"))
 	}
 }
 
-func deleteUser(database *db.Database) http.HandlerFunc {
+func deleteUser(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		database.DeleteUser(id)
+		err := database.DeleteUser(ctx, pool, id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Write([]byte("Success"))
 	}
 }
