@@ -11,7 +11,7 @@ import (
 	"github.com/leoldding/cpf-wl/handlers"
 )
 
-func main() {
+func Main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
