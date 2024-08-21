@@ -2,7 +2,9 @@ package auth
 
 import (
 	"errors"
+	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -13,9 +15,9 @@ type Credentials struct {
 	Password string `json:"Password"`
 }
 
-var username = "temp"
-var password = "temp"
-var secretKey = []byte("tempSecretKey")
+var username = os.Getenv("WL_USERNAME")
+var password = os.Getenv("WL_PASSWORD")
+var secretKey = []byte(os.Getenv("WL_SECRET_KEY"))
 
 func Login(w http.ResponseWriter, r *http.Request, creds Credentials) {
 	if creds.Username != username || creds.Password != password {
@@ -29,6 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request, creds Credentials) {
 		return
 	}
 
+	log.Println("SUCCESSFUL LOGIN")
 	http.SetCookie(w, &http.Cookie{
 		Name:     "wl-leaderboard",
 		Value:    tokenString,
@@ -87,5 +90,6 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) error {
 		return errors.New("ERROR: INVALID JWT")
 	}
 
+	log.Println("TOKEN IS VERIFIED")
 	return nil
 }

@@ -5,11 +5,12 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"log"
+	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var postgresConn = "postgresql://localhost:5432/postgres"
+var postgresConn = os.Getenv("WL_POSTGRES_CONN")
 
 type User struct {
 	Id        string
