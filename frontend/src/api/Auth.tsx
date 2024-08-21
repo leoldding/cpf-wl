@@ -1,8 +1,10 @@
 import { Credential } from "../types/Credentials"
 
+const API_URL = import.meta.env.VITE_WL_API_URL
+
 export async function Verify(): Promise<boolean> {
     try {
-        const response = await fetch("http://localhost:8080/api/verify", {
+        const response = await fetch(API_URL + "/verify", {
             method: "GET",
             credentials: "include",
         });
@@ -17,7 +19,7 @@ export async function Verify(): Promise<boolean> {
 
 export async function Login(credential: Credential): Promise<boolean> {
     try {
-        const response = await fetch("http://localhost:8080/api/login", {
+        const response = await fetch(API_URL + "/login", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -36,7 +38,7 @@ export async function Login(credential: Credential): Promise<boolean> {
 
 export async function Logout(): Promise<boolean> {
     try {
-        const response = await fetch("http://localhost:8080/api/logout", {
+        const response = await fetch(API_URL  + "/logout", {
             method: "GET",
             credentials: "include",
 
