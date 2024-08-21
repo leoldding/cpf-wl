@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { User } from "../types/User";
 import { GetUsers } from "../api/Users";
 import "../styles/leaderboard.css";
+import { GiWeightLiftingUp } from "react-icons/gi";
 
 const Main: React.FC = () => {
 
@@ -26,6 +27,7 @@ const Main: React.FC = () => {
     return (
         <div className="main-container">
             <main>
+                <h1 className="header">CPF Weightlifting Leaderboard <GiWeightLiftingUp/></h1>
                 <div className="leaderboard">
                     <div className="leaderboard-header">
                         <div>Name</div>

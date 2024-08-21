@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Login as LoginAPI, Verify } from "../api/Auth";
 import { Credential } from "../types/Credentials";
+import "../styles/login.css"
 
 const Login: React.FC = () => {
 
@@ -22,7 +23,8 @@ const Login: React.FC = () => {
         verify();
     }, []);
 
-    const handleLoginButton = async () => {
+    const handleLoginButton = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         const credential: Credential = { Username: credentials.Username, Password: credentials.Password };
         const loggedIn = await LoginAPI(credential);
         if (!loggedIn) {
@@ -48,21 +50,24 @@ const Login: React.FC = () => {
     }
 
     return (
-        <div className="login-container" >
+        <div className="login-container">
             <main>
-                <input
-                    type="text"
-                    placeholder="username"
-                    value={credentials.Username}
-                    onChange={(e) => handleCredentialChange("Username", e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="password"
-                    value={credentials.Password}
-                    onChange={(e) => handleCredentialChange("Password", e.target.value)}
-                />
-                <button type="button" disabled={!enableLoginButton()} onClick={handleLoginButton}>login</button>
+                <form className="login-form">
+                    <h1>Coach Login</h1>
+                    <input
+                        type="text"
+                        placeholder="username"
+                        value={credentials.Username}
+                        onChange={(e) => handleCredentialChange("Username", e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        placeholder="password"
+                        value={credentials.Password}
+                        onChange={(e) => handleCredentialChange("Password", e.target.value)}
+                    />
+                    <button type="submit" disabled={!enableLoginButton()} onClick={handleLoginButton}>login</button>
+                </form>
             </main>
         </div >
     );

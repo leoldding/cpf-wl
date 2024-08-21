@@ -166,7 +166,6 @@ const Admin: React.FC = () => {
                         <div>Name</div>
                         <div>Snatch</div>
                         <div>Clean & Jerk</div>
-                        <div>Total</div>
                         <div />
                     </div>
                     {users.map(user => (<div key={user.Id} className="admin-leaderboard-row">
@@ -188,7 +187,6 @@ const Admin: React.FC = () => {
                             value={inputValues[user.Id]?.CleanJerk || ""}
                             onChange={(e) => handleInputChange(user.Id, "CleanJerk", e.target.value)}
                         />
-                        <div>{user.Total}</div>
                         <div>
                             <button type="button" disabled={!enableUpdateButton(user.Id)} onClick={() => handleUpdateButton(user.Id)}><IoMdCheckmark /></button>
                             <button type="button" onClick={() => handleDeleteButton(user.Id)}><FaRegTrashAlt /></button>
@@ -213,14 +211,13 @@ const Admin: React.FC = () => {
                             value={addUser.CleanJerk}
                             onChange={(e) => handleAddChange("CleanJerk", e.target.value)}
                         />
-                        <div />
                         <div>
                             <button type="button" disabled={!enableAddButton()} onClick={handleAddButton}><IoMdAdd /></button>
                         </div>
                     </div>
                 </div>
             </main>
-            <button type="button" onClick={handleLogout}>logout</button>
+            <button className="logout" type="button" onClick={handleLogout}>logout</button>
         </div>
     );
 };
