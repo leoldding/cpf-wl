@@ -1,0 +1,26 @@
+.popover {
+    display: none;
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: #0967e8;
+    border-radius: 25px;
+    padding: 25px;
+    min-width: 35vw;
+    width: fit-content;
+    text-align: center;
+}
+
+@media (prefers-color-scheme: light) {
+    .popover {
+        background-color: #778ff0;
+    }
+}
+
+@media (max-width: 1024px) {
+    .popover {
+        font-size: 0.8em;
+    }
+}
