@@ -29,23 +29,6 @@ func NewDatabase(ctx context.Context) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-func LoadMockData(ctx context.Context, pool *pgxpool.Pool) error {
-	log.Println("LOADING MOCK DATA")
-	if err := CreateUser(ctx, pool, &User{Name: "Alfred Alvarado", Snatch: 20, CleanJerk: 40}); err != nil {
-		return err
-	}
-	if err := CreateUser(ctx, pool, &User{Name: "Benjamin Bolognese", Snatch: 40, CleanJerk: 90}); err != nil {
-		return err
-	}
-	if err := CreateUser(ctx, pool, &User{Name: "Charles Charleston", Snatch: 10, CleanJerk: 20}); err != nil {
-		return err
-	}
-	if err := CreateUser(ctx, pool, &User{Name: "Damian Dog", Snatch: 150, CleanJerk: 290}); err != nil {
-		return err
-	}
-	return nil
-}
-
 func CreateUser(ctx context.Context, pool *pgxpool.Pool, user *User) error {
 	conn, err := pool.Acquire(ctx)
 	if err != nil {
