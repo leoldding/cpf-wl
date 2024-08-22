@@ -8,6 +8,7 @@ const Login: React.FC = () => {
 
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState<{ Username: string, Password: string }>({ Username: "", Password: "" });
+    const [popoverText, setPopoverText] = useState<string>("");
 
     useEffect(() => {
         const verify = async () => {
@@ -23,11 +24,23 @@ const Login: React.FC = () => {
         verify();
     }, []);
 
-    const handleLoginButton = async (event: React.FormEvent<HTMLFormElement>) => {
+    useEffect(() => {
+        let timer: number;
+        if (popoverText) {
+            timer = window.setTimeout(() => {
+                setPopoverText("");
+            }, 5000);
+        }
+        return () => window.clearTimeout(timer);
+
+    }, [popoverText]);
+
+    const handleLoginButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         const credential: Credential = { Username: credentials.Username, Password: credentials.Password };
         const loggedIn = await LoginAPI(credential);
         if (!loggedIn) {
+            setPopoverText("There was an issue logging in.")
             return;
         }
 
@@ -52,6 +65,9 @@ const Login: React.FC = () => {
     return (
         <div className="login-container">
             <main>
+                <div style={{ display: popoverText ? 'block' : 'none' }} className="popover">
+                    {popoverText}
+                </div>
                 <form className="login-form">
                     <h1>Coach Login</h1>
                     <input

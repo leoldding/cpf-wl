@@ -4,6 +4,7 @@ import { User } from "../types/User";
 import { CreateUser, GetUsers, UpdateUser, DeleteUser } from "../api/Users";
 import { Verify, Logout } from "../api/Auth";
 import "../styles/admin-leaderboard.css";
+import "../styles/popover.css";
 import { IoMdCheckmark, IoMdAdd } from "react-icons/io";
 import { FaRegTrashAlt } from "react-icons/fa";
 
@@ -12,6 +13,7 @@ const Admin: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [inputValues, setInputValues] = useState<{ [key: string]: { Name: string, Snatch: string, CleanJerk: string } }>({});
     const [addUser, setAddUser] = useState<{ Name: string, Snatch: string, CleanJerk: string }>({ Name: "", Snatch: "", CleanJerk: "" });
+    const [popoverText, setPopoverText] = useState<string>("");
     const navigate = useNavigate();
 
     const sortUsers = (users: User[]) => {
@@ -31,6 +33,7 @@ const Admin: React.FC = () => {
                 setInputValues(initialValues);
             } catch (error) {
                 console.error(error);
+                setPopoverText("There was an issue when retrieving data.");
             }
         };
         getUsers();
@@ -49,6 +52,18 @@ const Admin: React.FC = () => {
         };
         verify();
     }, []);
+
+    useEffect(() => {
+        let timer: number;
+        if (popoverText) {
+            timer = window.setTimeout(() => {
+                setPopoverText("");
+            }, 5000);
+        }
+        return () => window.clearTimeout(timer);
+
+    }, [popoverText]);
+
 
     const handleUpdateButton = async (userId: string) => {
         const name = inputValues[userId].Name;
@@ -82,6 +97,7 @@ const Admin: React.FC = () => {
         }
         const updated = await UpdateUser(user);
         if (!updated) {
+            setPopoverText("There was an issue when updating athlete.");
             return;
         }
 
@@ -101,7 +117,7 @@ const Admin: React.FC = () => {
 
     const enableUpdateButton = (userId: string) => {
         const { Name, Snatch, CleanJerk } = inputValues[userId] || {};
-        const isNameValid = Name === "" || /^[a-zA-Z\s]+$/.test(Name) && !/^\s+$/.test(Name);
+        const isNameValid = Name === "" || /^[a-zA-Z.\s]+$/.test(Name) && !/^\s+$/.test(Name);
         const isSnatchValid = Snatch === "" || /^\d+$/.test(Snatch);
         const isCleanJerkValid = CleanJerk === "" || /^\d+$/.test(CleanJerk);
 
@@ -111,6 +127,7 @@ const Admin: React.FC = () => {
     const handleDeleteButton = async (userId: string) => {
         const deleted = await DeleteUser(userId);
         if (!deleted) {
+            setPopoverText("There was an issue when deleting athlete.");
             return;
         }
         const newUsers = users.filter(user => user.Id != userId);
@@ -121,6 +138,7 @@ const Admin: React.FC = () => {
         const user: User = { Id: "", Total: 0, Name: addUser.Name, Snatch: parseInt(addUser.Snatch), CleanJerk: parseInt(addUser.CleanJerk) }
         const newUser = await CreateUser(user);
         if (!newUser) {
+            setPopoverText("There was an issue when adding athlete.");
             return;
         }
 
@@ -144,7 +162,7 @@ const Admin: React.FC = () => {
 
     const enableAddButton = () => {
         const { Name, Snatch, CleanJerk } = addUser || {};
-        const isNameValid = /^[a-zA-Z\s]+$/.test(Name) && !/^\s+$/.test(Name);
+        const isNameValid = /^[a-zA-Z.\s]+$/.test(Name) && !/^\s+$/.test(Name);
         const isSnatchValid = /^\d+$/.test(Snatch);
         const isCleanJerkValid = /^\d+$/.test(CleanJerk);
 
@@ -161,6 +179,9 @@ const Admin: React.FC = () => {
     return (
         <div className="admin-container">
             <main>
+                <div style={{ display: popoverText ? 'block' : 'none' }} className="popover">
+                    {popoverText}
+                </div>
                 <div className="admin-leaderboard">
                     <div className="admin-leaderboard-header">
                         <div>Name</div>

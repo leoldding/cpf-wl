@@ -35,7 +35,7 @@ func Login(w http.ResponseWriter, r *http.Request, creds Credentials) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "wl-leaderboard",
 		Value:    tokenString,
-		Expires:  time.Now().Add(10 * time.Minute),
+		Expires:  time.Now().Add(30 * time.Minute),
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
@@ -46,7 +46,7 @@ func Login(w http.ResponseWriter, r *http.Request, creds Credentials) {
 
 func createToken(user string) (string, error) {
 	claims := jwt.MapClaims{
-		"exp":  time.Now().Add(10 * time.Minute).Unix(),
+		"exp":  time.Now().Add(30 * time.Minute).Unix(),
 		"user": user,
 	}
 
