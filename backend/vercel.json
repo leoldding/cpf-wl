@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.go",
+      "use": "@vercel/go"
+    }
+  ],
+  "routes": [
+    { 
+        "src": "/api/deleteUser/(.*)",
+        "dest": "/api/deleteUser.go"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.go"
+    }
+  ]
+}
+

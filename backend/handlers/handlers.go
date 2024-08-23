@@ -10,7 +10,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leoldding/cpf-wl/auth"
 	"github.com/leoldding/cpf-wl/database"
-	db "github.com/leoldding/cpf-wl/database"
 )
 
 func RegisterHandlers(router *mux.Router, ctx context.Context, pool *pgxpool.Pool) {
@@ -60,7 +59,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 func createUser(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var newUser *db.User
+		var newUser *database.User
 		if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -88,7 +87,7 @@ func getUsers(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 
 func updateUser(ctx context.Context, pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user *db.User
+		var user *database.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

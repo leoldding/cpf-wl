@@ -1,10 +1,8 @@
 import { User } from "../types/User"
 
-const API_URL = import.meta.env.VITE_WL_API_URL
-
 export async function CreateUser(user: User): Promise<User> {
     try {
-        const response = await fetch(API_URL + "/users", {
+        const response = await fetch("/api/createUser", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -23,9 +21,8 @@ export async function CreateUser(user: User): Promise<User> {
 }
 
 export async function GetUsers(): Promise<User[]> {
-    console.log(API_URL+"/users")
     try {
-        const response = await fetch(API_URL + "/users", {
+        const response = await fetch("/api/getUsers", {
             method: "GET",
         });
         if (!response.ok) {
@@ -40,7 +37,7 @@ export async function GetUsers(): Promise<User[]> {
 
 export async function UpdateUser(user: User): Promise<boolean> {
     try {
-        const response = await fetch(API_URL + "/users", {
+        const response = await fetch("/api/updateUser", {
             method: "PATCH",
             credentials: "include",
             headers: {
@@ -59,7 +56,7 @@ export async function UpdateUser(user: User): Promise<boolean> {
 
 export async function DeleteUser(userId: string): Promise<boolean> {
     try {
-        const response = await fetch(API_URL + "/users/" + userId, {
+        const response = await fetch("/api/deleteUser/" + userId, {
             method: "DELETE",
             credentials: "include",
         });
