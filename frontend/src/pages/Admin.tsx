@@ -14,6 +14,7 @@ const Admin: React.FC = () => {
     const [inputValues, setInputValues] = useState<{ [key: string]: { Name: string, Snatch: string, CleanJerk: string } }>({});
     const [addUser, setAddUser] = useState<{ Name: string, Snatch: string, CleanJerk: string }>({ Name: "", Snatch: "", CleanJerk: "" });
     const [popoverText, setPopoverText] = useState<string>("");
+    const [deletePopup, setDeletePopup] = useState<string>("");
     const navigate = useNavigate();
 
     const sortUsers = (users: User[]) => {
@@ -124,7 +125,16 @@ const Admin: React.FC = () => {
         return (!!Name || !!Snatch || !!CleanJerk) && isNameValid && isSnatchValid && isCleanJerkValid;
     }
 
+    const handleDeletePopup = (userId: string) => {
+        setDeletePopup(userId);
+    }
+
+    const handleDeletePopupCancel = () => {
+        setDeletePopup("");
+    }
+
     const handleDeleteButton = async (userId: string) => {
+        setDeletePopup("");
         const deleted = await DeleteUser(userId);
         if (!deleted) {
             setPopoverText("There was an issue when deleting athlete.");
@@ -182,6 +192,13 @@ const Admin: React.FC = () => {
                 <div style={{ display: popoverText ? 'block' : 'none' }} className="popover">
                     {popoverText}
                 </div>
+                <div style={{ display: deletePopup ? 'block' : 'none' }} className="delete-popup">
+                    <p>Are you sure you want to delete?</p>
+                    <div>
+                        <button type="button" onClick={handleDeletePopupCancel}>Cancel</button>
+                        <button type="button" onClick={() => handleDeleteButton(deletePopup)}>Delete</button>
+                    </div>
+                </div>
                 <div className="admin-leaderboard">
                     <div className="admin-leaderboard-header">
                         <div>Name</div>
@@ -210,7 +227,7 @@ const Admin: React.FC = () => {
                         />
                         <div>
                             <button type="button" disabled={!enableUpdateButton(user.Id)} onClick={() => handleUpdateButton(user.Id)}><IoMdCheckmark /></button>
-                            <button type="button" onClick={() => handleDeleteButton(user.Id)}><FaRegTrashAlt /></button>
+                            <button type="button" disabled={!!deletePopup} onClick={() => handleDeletePopup(user.Id)}><FaRegTrashAlt /></button>
                         </div>
                     </div>))}
                     <div className="admin-leaderboard-row">
